@@ -40,7 +40,7 @@ namespace {
     }
 
     void handle_sigint(int) {
-        std::cout << "Received C-c, closing listen fd!" << std::endl;
+        //std::cout << "Received C-c, closing listen fd!" << std::endl;
         closeListener();
     }
 }

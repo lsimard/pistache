@@ -26,3 +26,21 @@
 *.exe
 *.out
 *.app
+
+
+# CMake
+CMakeFiles
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+Testing
+CTestTestfile.cmake
+
+# Test and examples
+examples/custom_header
+examples/hello_server
+examples/http_client
+examples/http_server
+examples/rest_description
+examples/rest_server
+tests/run_*_test
