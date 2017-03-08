@@ -188,11 +188,14 @@ class Request : public Http::Request {
 public:
     friend class Router;
 
-    bool hasParam(std::string name) const;
-    TypedParam param(std::string name) const;
+    virtual bool hasParam(std::string name) const;
+    virtual TypedParam param(std::string name) const;
 
     TypedParam splatAt(size_t index) const;
     std::vector<TypedParam> splat() const;
+
+protected:
+    Request() {}
 
 private:
     explicit Request(

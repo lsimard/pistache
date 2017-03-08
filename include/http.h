@@ -127,7 +127,7 @@ public:
     Method method() const;
     std::string resource() const;
 
-    std::string body() const;
+    virtual std::string body() const;
 
     const Header::Collection& headers() const;
     const Uri::Query& query() const;
@@ -146,7 +146,7 @@ public:
     std::shared_ptr<Tcp::Peer> peer() const;
 #endif
 
-private:
+protected:
     Request();
 
 #ifdef LIBSTDCPP_SMARTPTR_LOCK_FIXME
