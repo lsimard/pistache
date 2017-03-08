@@ -55,7 +55,7 @@ struct ExceptionPrinter {
         try {
             std::rethrow_exception(exc);
         } catch (const std::exception& e) {
-            std::cout << "Got exception: " << e.what() << std::endl;
+            //std::cout << "Got exception: " << e.what() << std::endl;
         }
     }
 };
