@@ -10,9 +10,9 @@ set(SOURCE_FILES
 
 add_library(net_static ${SOURCE_FILES})
 target_link_libraries(net_static pthread)
-install(TARGETS net_static DESTINATION lib)
+install(TARGETS net_static DESTINATION lib64)
 
 add_library(net SHARED ${SOURCE_FILES})
 target_link_libraries(net pthread)
-install(TARGETS net DESTINATION lib)
+install(TARGETS net DESTINATION lib64)
 
