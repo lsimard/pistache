@@ -109,8 +109,8 @@ Transport::disarmTimer(Fd fd) {
 
 void
 Transport::handleIncoming(const std::shared_ptr<Peer>& peer) {
-    char buffer[Const::MaxBuffer];
-    memset(buffer, 0, sizeof buffer);
+    std::vector<char> vbuffer(Const::SmallBuffer);
+    memset(vbuffer.data(), 0, vbuffer.size());
 
     ssize_t totalBytes = 0;
     int fd = peer->fd();
@@ -119,11 +119,11 @@ Transport::handleIncoming(const std::shared_ptr<Peer>& peer) {
 
         ssize_t bytes;
 
-        bytes = recv(fd, buffer + totalBytes, Const::MaxBuffer - totalBytes, 0);
+        bytes = recv(fd, &vbuffer[0] + totalBytes, vbuffer.size() - totalBytes, 0);
         if (bytes == -1) {
             if (errno == EAGAIN || errno == EWOULDBLOCK) {
                 if (totalBytes > 0) {
-                    handler_->onInput(buffer, totalBytes, peer);
+                    handler_->onInput(vbuffer.data(), totalBytes, peer);
                 }
             } else {
                 if (errno == ECONNRESET) {
@@ -143,8 +143,11 @@ Transport::handleIncoming(const std::shared_ptr<Peer>& peer) {
         else {
             totalBytes += bytes;
             if (totalBytes >= Const::MaxBuffer) {
-                std::cerr << "Too long packet" << std::endl;
+                std::cerr << "Too long packet MaxBuffer allowed is " << Const::MaxBuffer <<" bytes" << std::endl;
                 break;
+              } else if (totalBytes >= vbuffer.size()) {
+                vbuffer.resize(vbuffer.size() + bytes);
+                memset(vbuffer.data() + (vbuffer.size() - bytes), 0, bytes);
             }
         }
     }
