@@ -94,10 +94,12 @@ public:
     }
 
     bool feed(const char* data, size_t len) {
-        if (size + len >= Const::MaxBuffer) {
-            return false;
-        }
+        //if (size + len >= Const::MaxBuffer) {
+        //    return false;
+        //}
 
+        // FIXME: Why not use the data pointer here? We could same
+        //        this not usefull copy
         if (size + len >= N) {
             bytes.resize(bytes.size() + size + len + 1);
             memset(bytes.data() + size, 0, len);
