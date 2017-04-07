@@ -142,12 +142,12 @@ Transport::handleIncoming(const std::shared_ptr<Peer>& peer) {
 
         else {
             totalBytes += bytes;
-            if (totalBytes >= Const::MaxBuffer) {
-                std::cerr << "Too long packet MaxBuffer allowed is " << Const::MaxBuffer <<" bytes" << std::endl;
+            if (totalBytes >= 67108864) {
+                std::cerr << "Too long packet MaxBuffer allowed is 64M bytes" << std::endl;
                 break;
-              } else if (totalBytes >= vbuffer.size()) {
+            } else if (totalBytes >= vbuffer.size()) {
                 vbuffer.resize(vbuffer.size() + bytes);
-                memset(vbuffer.data() + (vbuffer.size() - bytes), 0, bytes);
+                //memset(vbuffer.data() + (vbuffer.size() - bytes), 0, bytes);
             }
         }
     }
