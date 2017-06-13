@@ -96,25 +96,32 @@ public:
     bool feed(const char* data, size_t len) {
 
         //FIXME: This value needs to be an option
-        if(bytes.size() + len > 67108864) {
+        if((size + len) > 67108864) {
+            std::cerr << "Size is too big" << std::endl;
             return false;
         }
 
-        // FIXME: Why not use the data pointer here? We could same
-        //        this not useful copy
-        if (size + len >= N) {
-            bytes.resize(bytes.size() + size + len + 1);
+        int position = 0;
+        CharT *cur = nullptr;
+        if (size + len >= bytes.size()) {
+
+            bytes.resize(bytes.size() + size + len);
+
+            if(this->gptr() && this->eback()) {
+                position = this->gptr() - this->eback();
+            }
+            cur = bytes.data() + position;
+       }
+       else {
+            if (this->gptr()) {
+                cur = this->gptr();
+            }
+            else {
+                cur = bytes.data() + size;
+            }
         }
 
         memcpy(bytes.data() + size, data, len);
-
-        CharT *cur = nullptr;
-        if (this->gptr() && (size + len < N)) {
-            cur = this->gptr();
-        } else {
-            cur = bytes.data() + size;
-        }
-
         Base::setg(bytes.data(), cur, bytes.data() + size + len);
 
         size += len;
@@ -122,7 +129,6 @@ public:
     }
 
     void reset() {
-        memset(bytes.data(), 0, bytes.size());
         size = 0;
         Base::setg(bytes.data(), bytes.data(), bytes.data());
     }
