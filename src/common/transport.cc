@@ -127,6 +127,9 @@ Transport::handleIncoming(const std::shared_ptr<Peer>& peer) {
                 }
             } else {
                 if (errno == ECONNRESET) {
+                    if(totalBytes > 0) {
+                        handler_->onInput(vbuffer.data(), totalBytes, peer);
+                    }
                     handlePeerDisconnection(peer);
                 }
                 else {
@@ -136,18 +139,20 @@ Transport::handleIncoming(const std::shared_ptr<Peer>& peer) {
             break;
         }
         else if (bytes == 0) {
+            if(totalBytes > 0) {
+                handler_->onInput(vbuffer.data(), totalBytes, peer);
+            }
             handlePeerDisconnection(peer);
             break;
         }
-
         else {
             totalBytes += bytes;
-            if (totalBytes >= 67108864) {
-                std::cerr << "Too long packet MaxBuffer allowed is 64M bytes" << std::endl;
+            // Protection here
+            if(totalBytes >= 67108864) {
+                handler_->onInput(vbuffer.data(), totalBytes, peer);
                 break;
             } else if (totalBytes >= vbuffer.size()) {
-                vbuffer.resize(vbuffer.size() + bytes);
-                //memset(vbuffer.data() + (vbuffer.size() - bytes), 0, bytes);
+                vbuffer.resize(vbuffer.size() + Const::SmallBuffer);
             }
         }
     }
