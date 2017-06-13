@@ -110,7 +110,6 @@ Transport::disarmTimer(Fd fd) {
 void
 Transport::handleIncoming(const std::shared_ptr<Peer>& peer) {
     std::vector<char> vbuffer(Const::SmallBuffer);
-    memset(vbuffer.data(), 0, vbuffer.size());
 
     ssize_t totalBytes = 0;
     int fd = peer->fd();
