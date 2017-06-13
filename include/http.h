@@ -49,6 +49,7 @@ namespace Private {
     class RequestLineStep;
     class ResponseLineStep;
     class HeadersStep;
+    class EmptyLineStep;
     class BodyStep;
 }
 
@@ -65,6 +66,7 @@ class Message {
 public:
     friend class Private::HeadersStep;
     friend class Private::BodyStep;
+    friend class Private::EmptyLineStep;
     friend class Private::ParserBase;
 
     Message();
@@ -609,6 +611,14 @@ namespace Private {
         State apply(StreamCursor& cursor);
     };
 
+    struct EmptyLineStep : public Step {
+        EmptyLineStep(Message* message)
+            : Step(message)
+        { }
+
+        State apply(StreamCursor& cursor);
+    };
+
     struct BodyStep : public Step {
         BodyStep(Message* message)
             : Step(message)
@@ -673,7 +683,7 @@ namespace Private {
         StreamCursor cursor;
 
     protected:
-        static constexpr size_t StepsCount = 3;
+        static constexpr size_t StepsCount = 4;
 
         std::array<std::unique_ptr<Step>, StepsCount> allSteps;
         size_t currentStep;
@@ -688,7 +698,8 @@ namespace Private {
         { 
             allSteps[0].reset(new RequestLineStep(&request));
             allSteps[1].reset(new HeadersStep(&request));
-            allSteps[2].reset(new BodyStep(&request));
+            allSteps[2].reset(new EmptyLineStep(&request));
+            allSteps[3].reset(new BodyStep(&request));
         }
 
         Parser(const char* data, size_t len)
@@ -696,7 +707,8 @@ namespace Private {
         {
             allSteps[0].reset(new RequestLineStep(&request));
             allSteps[1].reset(new HeadersStep(&request));
-            allSteps[2].reset(new BodyStep(&request));
+            allSteps[2].reset(new EmptyLineStep(&request));
+            allSteps[3].reset(new BodyStep(&request));
 
             feed(data, len);
         }
@@ -719,7 +731,8 @@ namespace Private {
         {
             allSteps[0].reset(new ResponseLineStep(&response));
             allSteps[1].reset(new HeadersStep(&response));
-            allSteps[2].reset(new BodyStep(&response));
+            allSteps[2].reset(new EmptyLineStep(&response));
+            allSteps[3].reset(new BodyStep(&response));
         }
 
         Parser(const char* data, size_t len)
@@ -727,7 +740,8 @@ namespace Private {
         {
             allSteps[0].reset(new ResponseLineStep(&response));
             allSteps[1].reset(new HeadersStep(&response));
-            allSteps[2].reset(new BodyStep(&response));
+            allSteps[2].reset(new EmptyLineStep(&response));
+            allSteps[3].reset(new BodyStep(&response));
 
             feed(data, len);
         }

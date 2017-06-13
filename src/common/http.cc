@@ -319,6 +319,15 @@ namespace Private {
     }
 
     State
+    EmptyLineStep::apply(StreamCursor &cursor) {
+        // CRLF
+        if (!cursor.advance(2))
+            return State::Again;
+        else
+            return State::Next;
+    }
+
+    State
     BodyStep::apply(StreamCursor& cursor) {
         if (message->body_.empty()) {
             /* If this is the first time we are reading the body, skip the CRLF */
